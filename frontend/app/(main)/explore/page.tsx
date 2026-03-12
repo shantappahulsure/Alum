@@ -28,17 +28,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
-// Sample data for demonstration - Using specific, stable values
-const PEOPLE_DATA = Array.from({ length: 9 }).map((_, i) => ({
-  id: i + 1,
-  name: `User Name ${i + 1}`,
-  position: "Software Engineer",
-  company: "TechCorp",
-  location: "San Francisco, CA",
-  imageSrc: `/placeholder.svg?height=80&width=80&text=User${i + 1}`,
-  mutualConnections: i + 3, // Using deterministic values based on index
-}));
-
 const COMPANIES_DATA = Array.from({ length: 6 }).map((_, i) => ({
   id: i + 1,
   name: `Company ${i + 1}`,
@@ -46,8 +35,8 @@ const COMPANIES_DATA = Array.from({ length: 6 }).map((_, i) => ({
   description:
     "Leading technology company with a focus on innovation and user experience.",
   location: "San Francisco, CA",
-  openPositions: (i + 1) * 5, // Deterministic value
-  employees: (i + 1) * 1000, // Deterministic value
+  openPositions: (i + 1) * 5,
+  employees: (i + 1) * 1000,
 }));
 
 export default function ExplorePage() {
@@ -55,18 +44,34 @@ export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [industryFilter, setIndustryFilter] = useState("");
 
-  // These state variables would be used for the advanced filter functionality
   const [locationFilter, setLocationFilter] = useState<string[]>([]);
   const [experienceFilter, setExperienceFilter] = useState<string[]>([]);
   const [connectionFilter, setConnectionFilter] = useState<string[]>([]);
   const [people, setPeople] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
-  fetch("http://localhost:3001/api/users")
-    .then((res) => res.json())
-    .then((data) => setPeople(data))
-    .catch((err) => console.error("Error fetching users:", err));
-}, []);
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/users`);
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch users");
+        }
+
+        const data = await res.json();
+        setPeople(data);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [API_URL]);
 
   return (
     <div className="container py-10">
@@ -100,7 +105,7 @@ export default function ExplorePage() {
 
         <div className="flex gap-3">
           <Select value={industryFilter} onValueChange={setIndustryFilter}>
-            <SelectTrigger className="min-w-[160px] whitespace-nowrap">
+            <SelectTrigger className="min-w-[160px]">
               <SelectValue placeholder="Industry" />
             </SelectTrigger>
             <SelectContent>
@@ -120,6 +125,7 @@ export default function ExplorePage() {
                 Filters
               </Button>
             </SheetTrigger>
+
             <SheetContent className="w-full max-w-sm sm:max-w-md">
               <SheetHeader className="mb-6">
                 <SheetTitle>Filter Results</SheetTitle>
@@ -129,117 +135,33 @@ export default function ExplorePage() {
               </SheetHeader>
 
               <div className="space-y-6">
-                {/* Location Filter */}
                 <div className="space-y-3">
                   <h3 className="text-sm font-medium">Location</h3>
                   <Separator />
-                  <div className="space-y-2">
-                    {["San Francisco", "New York", "London", "Remote"].map(
-                      (location) => (
-                        <div key={location} className="flex items-center gap-2">
-                          <Checkbox
-                            id={`location-${location}`}
-                            checked={locationFilter.includes(location)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setLocationFilter([
-                                  ...locationFilter,
-                                  location,
-                                ]);
-                              } else {
-                                setLocationFilter(
-                                  locationFilter.filter((l) => l !== location)
-                                );
-                              }
-                            }}
-                          />
-                          <Label
-                            htmlFor={`location-${location}`}
-                            className="text-sm"
-                          >
-                            {location}
-                          </Label>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Experience Level Filter */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium">Experience Level</h3>
-                  <Separator />
-                  <div className="space-y-2">
-                    {["Entry level", "Mid-level", "Senior", "Executive"].map(
-                      (level) => (
-                        <div key={level} className="flex items-center gap-2">
-                          <Checkbox
-                            id={`exp-${level}`}
-                            checked={experienceFilter.includes(level)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setExperienceFilter([
-                                  ...experienceFilter,
-                                  level,
-                                ]);
-                              } else {
-                                setExperienceFilter(
-                                  experienceFilter.filter((e) => e !== level)
-                                );
-                              }
-                            }}
-                          />
-                          <Label htmlFor={`exp-${level}`} className="text-sm">
-                            {level}
-                          </Label>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Connection Type Filter */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium">Connection</h3>
-                  <Separator />
-                  <div className="space-y-2">
-                    {[
-                      "1st connections",
-                      "2nd connections",
-                      "3rd+ connections",
-                    ].map((connection) => (
-                      <div key={connection} className="flex items-center gap-2">
+                  {["San Francisco", "New York", "London", "Remote"].map(
+                    (location) => (
+                      <div key={location} className="flex items-center gap-2">
                         <Checkbox
-                          id={`conn-${connection}`}
-                          checked={connectionFilter.includes(connection)}
+                          checked={locationFilter.includes(location)}
                           onCheckedChange={(checked) => {
                             if (checked) {
-                              setConnectionFilter([
-                                ...connectionFilter,
-                                connection,
-                              ]);
+                              setLocationFilter([...locationFilter, location]);
                             } else {
-                              setConnectionFilter(
-                                connectionFilter.filter((c) => c !== connection)
+                              setLocationFilter(
+                                locationFilter.filter((l) => l !== location)
                               );
                             }
                           }}
                         />
-                        <Label
-                          htmlFor={`conn-${connection}`}
-                          className="text-sm"
-                        >
-                          {connection}
-                        </Label>
+                        <Label>{location}</Label>
                       </div>
-                    ))}
-                  </div>
+                    )
+                  )}
                 </div>
               </div>
 
-              <SheetFooter className="mt-8 flex gap-3 sm:justify-between">
+              <SheetFooter className="mt-8 flex gap-3">
                 <Button
-                  type="button"
                   variant="outline"
                   onClick={() => {
                     setLocationFilter([]);
@@ -248,14 +170,14 @@ export default function ExplorePage() {
                   }}
                   className="flex-1"
                 >
-                  Reset All
+                  Reset
                 </Button>
+
                 <Button
-                  type="button"
                   className="flex-1"
                   onClick={() => setIsFilterOpen(false)}
                 >
-                  Apply Filters
+                  Apply
                 </Button>
               </SheetFooter>
             </SheetContent>
@@ -263,123 +185,30 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {/* Active filters display */}
-      {(industryFilter ||
-        locationFilter.length > 0 ||
-        experienceFilter.length > 0 ||
-        connectionFilter.length > 0) && (
-        <div className="mb-6 flex flex-wrap gap-2">
-          {industryFilter && industryFilter !== "all" && (
-            <Badge variant="secondary" className="flex items-center gap-1">
-              Industry: {industryFilter}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 ml-1"
-                onClick={() => setIndustryFilter("")}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
-          )}
-
-          {locationFilter.map((location) => (
-            <Badge
-              key={location}
-              variant="secondary"
-              className="flex items-center gap-1"
-            >
-              Location: {location}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 ml-1"
-                onClick={() =>
-                  setLocationFilter(
-                    locationFilter.filter((l) => l !== location)
-                  )
-                }
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
-          ))}
-
-          {/* Add similar badges for other active filters */}
-          {experienceFilter.map((exp) => (
-            <Badge
-              key={exp}
-              variant="secondary"
-              className="flex items-center gap-1"
-            >
-              Experience: {exp}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 ml-1"
-                onClick={() =>
-                  setExperienceFilter(experienceFilter.filter((e) => e !== exp))
-                }
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
-          ))}
-
-          {connectionFilter.map((conn) => (
-            <Badge
-              key={conn}
-              variant="secondary"
-              className="flex items-center gap-1"
-            >
-              {conn}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 ml-1"
-                onClick={() =>
-                  setConnectionFilter(
-                    connectionFilter.filter((c) => c !== conn)
-                  )
-                }
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Badge>
-          ))}
-        </div>
-      )}
-
       <Tabs defaultValue="people" className="mb-10">
-        <TabsList className="mb-6 inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-          <TabsTrigger
-            value="people"
-            className="ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            People
-          </TabsTrigger>
-          <TabsTrigger
-            value="companies"
-            className="ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            Companies
-          </TabsTrigger>
+        <TabsList className="mb-6">
+          <TabsTrigger value="people">People</TabsTrigger>
+          <TabsTrigger value="companies">Companies</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="people" className="mt-0">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-           {people.map((person) => (
-  <ProfileCard
-    key={person._id}
-    id={person._id}
-    name={`${person.firstName} ${person.lastName}`}
-    position="Software Engineer"
-    company={person.companyName || "Company"}
-    location="India"
-    imageSrc="/placeholder.svg"
-  />
-))}
-          </div>
+        <TabsContent value="people">
+          {loading ? (
+            <p>Loading users...</p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {people.map((person) => (
+                <ProfileCard
+                  key={person._id}
+                  id={person._id}
+                  name={`${person.firstName} ${person.lastName}`}
+                  position={person.position || "Software Engineer"}
+                  company={person.companyName || "Company"}
+                  location={person.location || "India"}
+                  imageSrc="/placeholder.svg"
+                />
+              ))}
+            </div>
+          )}
 
           <div className="mt-8 flex justify-center">
             <Button variant="outline" className="flex items-center gap-2">
@@ -389,29 +218,23 @@ export default function ExplorePage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="companies" className="mt-0">
+        <TabsContent value="companies">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {COMPANIES_DATA.map((company) => (
               <CompanyCard key={company.id} {...company} />
             ))}
           </div>
-
-          <div className="mt-8 flex justify-center">
-            <Button variant="outline" className="flex items-center gap-2">
-              Load More
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </div>
         </TabsContent>
       </Tabs>
 
-      <div className="mt-10 rounded-lg border border-border bg-card p-6 text-center">
+      <div className="mt-10 rounded-lg border p-6 text-center">
         <h2 className="mb-2 text-xl font-semibold">
           Looking for job opportunities?
         </h2>
         <p className="mb-6 text-muted-foreground">
           Explore open positions and find your next career move
         </p>
+
         <Button asChild>
           <Link href="/jobs" className="flex items-center gap-2">
             View Jobs
