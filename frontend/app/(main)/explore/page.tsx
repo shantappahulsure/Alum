@@ -61,9 +61,14 @@ export default function ExplorePage() {
   const [connectionFilter, setConnectionFilter] = useState<string[]>([]);
   const [people, setPeople] = useState<any[]>([]);
 
-  useEffect(() => {
-  fetch("http://localhost:3001/api/users")
-    .then((res) => res.json())
+useEffect(() => {
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch users");
+      }
+      return res.json();
+    })
     .then((data) => setPeople(data))
     .catch((err) => console.error("Error fetching users:", err));
 }, []);
