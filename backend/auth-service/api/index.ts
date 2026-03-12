@@ -12,7 +12,16 @@ import userRoutes from "./routes/user.routes";
 const app = express();
 
 // Middleware
-app.use(cors(config.cors));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://alum.vercel.app"
+    ],
+    credentials: true,
+  })
+);
+
 app.use(helmet());
 app.use(express.json());
 app.use(morgan("combined"));
