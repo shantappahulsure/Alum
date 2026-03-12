@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -47,15 +48,17 @@ export default function ExplorePage() {
   const [locationFilter, setLocationFilter] = useState<string[]>([]);
   const [experienceFilter, setExperienceFilter] = useState<string[]>([]);
   const [connectionFilter, setConnectionFilter] = useState<string[]>([]);
+
   const [people, setPeople] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
+  // ✅ FETCH USERS FROM BACKEND
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/users`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users`
+        );
 
         if (!res.ok) {
           throw new Error("Failed to fetch users");
@@ -63,18 +66,19 @@ export default function ExplorePage() {
 
         const data = await res.json();
         setPeople(data);
-      } catch (err) {
-        console.error("Error fetching users:", err);
+      } catch (error) {
+        console.error("Error fetching users:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUsers();
-  }, [API_URL]);
+  }, []);
 
   return (
     <div className="container py-10">
+      {/* Header */}
       <div className="mb-8 space-y-3">
         <h1 className="text-3xl font-bold tracking-tight">Explore Network</h1>
         <p className="text-muted-foreground">
@@ -82,6 +86,7 @@ export default function ExplorePage() {
         </p>
       </div>
 
+      {/* Search */}
       <div className="mb-8 flex flex-col gap-4 md:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -103,9 +108,10 @@ export default function ExplorePage() {
           )}
         </div>
 
+        {/* Industry filter */}
         <div className="flex gap-3">
           <Select value={industryFilter} onValueChange={setIndustryFilter}>
-            <SelectTrigger className="min-w-[160px]">
+            <SelectTrigger className="min-w-[160px] whitespace-nowrap">
               <SelectValue placeholder="Industry" />
             </SelectTrigger>
             <SelectContent>
@@ -118,6 +124,7 @@ export default function ExplorePage() {
             </SelectContent>
           </Select>
 
+          {/* Advanced Filters */}
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
@@ -130,34 +137,34 @@ export default function ExplorePage() {
               <SheetHeader className="mb-6">
                 <SheetTitle>Filter Results</SheetTitle>
                 <SheetDescription>
-                  Narrow down your search with specific criteria
+                  Narrow down your search
                 </SheetDescription>
               </SheetHeader>
 
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium">Location</h3>
-                  <Separator />
-                  {["San Francisco", "New York", "London", "Remote"].map(
-                    (location) => (
-                      <div key={location} className="flex items-center gap-2">
-                        <Checkbox
-                          checked={locationFilter.includes(location)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setLocationFilter([...locationFilter, location]);
-                            } else {
-                              setLocationFilter(
-                                locationFilter.filter((l) => l !== location)
-                              );
-                            }
-                          }}
-                        />
-                        <Label>{location}</Label>
-                      </div>
-                    )
-                  )}
-                </div>
+              {/* Location */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium">Location</h3>
+                <Separator />
+
+                {["San Francisco", "New York", "London", "Remote"].map(
+                  (location) => (
+                    <div key={location} className="flex items-center gap-2">
+                      <Checkbox
+                        checked={locationFilter.includes(location)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setLocationFilter([...locationFilter, location]);
+                          } else {
+                            setLocationFilter(
+                              locationFilter.filter((l) => l !== location)
+                            );
+                          }
+                        }}
+                      />
+                      <Label>{location}</Label>
+                    </div>
+                  )
+                )}
               </div>
 
               <SheetFooter className="mt-8 flex gap-3">
@@ -168,16 +175,12 @@ export default function ExplorePage() {
                     setExperienceFilter([]);
                     setConnectionFilter([]);
                   }}
-                  className="flex-1"
                 >
                   Reset
                 </Button>
 
-                <Button
-                  className="flex-1"
-                  onClick={() => setIsFilterOpen(false)}
-                >
-                  Apply
+                <Button onClick={() => setIsFilterOpen(false)}>
+                  Apply Filters
                 </Button>
               </SheetFooter>
             </SheetContent>
@@ -185,15 +188,23 @@ export default function ExplorePage() {
         </div>
       </div>
 
+      {/* Tabs */}
       <Tabs defaultValue="people" className="mb-10">
         <TabsList className="mb-6">
           <TabsTrigger value="people">People</TabsTrigger>
           <TabsTrigger value="companies">Companies</TabsTrigger>
         </TabsList>
 
+        {/* PEOPLE TAB */}
         <TabsContent value="people">
           {loading ? (
-            <p>Loading users...</p>
+            <p className="text-center text-muted-foreground">
+              Loading users...
+            </p>
+          ) : people.length === 0 ? (
+            <p className="text-center text-muted-foreground">
+              No users found
+            </p>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {people.map((person) => (
@@ -218,6 +229,7 @@ export default function ExplorePage() {
           </div>
         </TabsContent>
 
+        {/* COMPANIES TAB */}
         <TabsContent value="companies">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {COMPANIES_DATA.map((company) => (
@@ -227,7 +239,8 @@ export default function ExplorePage() {
         </TabsContent>
       </Tabs>
 
-      <div className="mt-10 rounded-lg border p-6 text-center">
+      {/* Jobs CTA */}
+      <div className="mt-10 rounded-lg border border-border bg-card p-6 text-center">
         <h2 className="mb-2 text-xl font-semibold">
           Looking for job opportunities?
         </h2>
@@ -236,9 +249,8 @@ export default function ExplorePage() {
         </p>
 
         <Button asChild>
-          <Link href="/jobs" className="flex items-center gap-2">
-            View Jobs
-            <ArrowRight className="h-4 w-4" />
+          <Link href="/jobs">
+            View Jobs <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
       </div>
