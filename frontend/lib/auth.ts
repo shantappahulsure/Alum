@@ -1,8 +1,7 @@
 import axios from "axios";
 import { User, RegisterData } from "./types";
 
-const API_URL =   process.env.NEXT_PUBLIC_API_URL ||
-  "https://alum-backend-ldzm.onrender.com";
+const API_URL =   process.env.NEXT_PUBLIC_API_URL;
 const AUTH_API = `${API_URL}/api/auth`;
 
 let isRefreshing = false;
