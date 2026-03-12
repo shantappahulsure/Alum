@@ -43,7 +43,7 @@ app.use(
 /*
 Allow preflight requests
 */
-app.options("*", cors());
+app.options("/*", cors());
 
 /*
 ===========================
