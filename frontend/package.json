@@ -48,6 +48,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
     "country-data-list": "^1.4.1",
+    "d3-ease": "^3.0.1",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "embla-carousel-react": "8.5.1",
@@ -81,6 +82,7 @@
     "zod": "latest"
   },
   "devDependencies": {
+    "@types/d3-ease": "^3.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/jwt-decode": "^2.2.1",
     "@types/node": "^22",
