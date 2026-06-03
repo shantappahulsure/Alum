@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { validateAccessToken } from "@/lib/auth";
+// import { validateAccessToken } from "@/lib/auth";
 
 const routePermissions = {
   public: [
@@ -106,51 +106,46 @@ export async function middleware(request: NextRequest) {
   /****************************************
 CHECK IF ROUTE IS ACTUALLY PROTECTED
 ****************************************/
+  // YAHA PE-----------------------------------------------------------------------
+// const protectedRoutes = [
+//   ...routePermissions.user,
+//   ...routePermissions.recruiter,
+//   ...routePermissions.admin,
+// ];
 
-const protectedRoutes = [
-  ...routePermissions.user,
-  ...routePermissions.recruiter,
-  ...routePermissions.admin,
-];
+// const isProtectedRoute = protectedRoutes.some(
+//   (route) =>
+//     route === path ||
+//     matchRoute(path, route)
+// );
 
-const isProtectedRoute = protectedRoutes.some(
-  (route) =>
-    route === path ||
-    matchRoute(path, route)
-);
+// if (!isProtectedRoute) {
+//   return NextResponse.next();
+// }
 
-if (!isProtectedRoute) {
-  return NextResponse.next();
-}
+//   // Check authentication status by validating the access token
+//   const accessToken =
 
-  // Check authentication status by validating the access token
-  const accessToken = request.headers.get("x-access-token");
-  let isAuthenticated = false;
+//   request.cookies.get("accessToken")?.value ||
 
-  if (accessToken) {
-    try {
-      await validateAccessToken(accessToken);
-      isAuthenticated = true;
-    } catch (error) {
-      console.error("Token validation failed in middleware:", error);
-      isAuthenticated = false;
-    }
-  }
+//   request.headers.get("x-access-token");
 
-  if (!isAuthenticated) {
-    const from = encodeURIComponent(path);
-    const loginUrl = new URL(`/login?from=${from}`, request.url);
-    loginUrl.searchParams.append("_ts", Date.now().toString());
-    const response = NextResponse.redirect(loginUrl);
-    const currentRedirectCount = parseInt(
-      request.headers.get("x-redirect-count") || "0"
-    );
-    response.headers.set(
-      "x-redirect-count",
-      (currentRedirectCount + 1).toString()
-    );
-    return response;
-  }
+// const isAuthenticated = !!accessToken;
+
+//   if (!isAuthenticated) {
+//     const from = encodeURIComponent(path);
+//     const loginUrl = new URL(`/login?from=${from}`, request.url);
+//     loginUrl.searchParams.append("_ts", Date.now().toString());
+//     const response = NextResponse.redirect(loginUrl);
+//     const currentRedirectCount = parseInt(
+//       request.headers.get("x-redirect-count") || "0"
+//     );
+//     response.headers.set(
+//       "x-redirect-count",
+//       (currentRedirectCount + 1).toString()
+//     );
+//     return response;
+//   }
 
   return NextResponse.next();
 }
