@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API =
-  "http://localhost:3001/api/notifications";
+  `${process.env.NEXT_PUBLIC_API_URL}/api/notifications`;
 
 export const getNotifications =
   async (email: string) => {

@@ -6,7 +6,7 @@ let socket: Socket;
 
 if (typeof window !== "undefined") {
   socket = io(
-    "http://localhost:3001",
+    process.env.NEXT_PUBLIC_API_URL!,
     {
       transports: ["websocket"],
 

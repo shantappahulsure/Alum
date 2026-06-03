@@ -31,7 +31,7 @@ SEND OTP
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:3001/api/auth/send-otp",
+       `${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-otp`,
         {
           method: "POST",
 
@@ -77,7 +77,7 @@ RESET PASSWORD
         setLoading(true);
 
         const response = await fetch(
-          "http://localhost:3001/api/auth/reset-password-otp",
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password-otp`,
           {
             method: "POST",
 

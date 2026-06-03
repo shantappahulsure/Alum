@@ -3,4 +3,5 @@ node_modules
 .next
 dist
 build
-backend/auth-service/api/uploads/
+backend/auth-service/api/uploads/*
+!backend/auth-service/api/uploads/multer.ts

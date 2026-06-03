@@ -39,7 +39,7 @@ export default function ContactPage() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:3001/api/contact",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/contact`,
         {
           method: "POST",
           headers: {

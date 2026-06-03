@@ -17,7 +17,7 @@ export default function ProfilePage() {
     const fetchUser = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3001/api/users/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`,
           { cache: "no-store" }
         );
 
