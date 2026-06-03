@@ -17,6 +17,7 @@ const routePermissions = {
     "/terms-of-service",
     "/privacy-policy",
     "/faq",
+    "/chat",
   ],
   user: [
     "/profile",
@@ -101,6 +102,26 @@ export async function middleware(request: NextRequest) {
   if (path === "/login") {
     return NextResponse.next();
   }
+
+  /****************************************
+CHECK IF ROUTE IS ACTUALLY PROTECTED
+****************************************/
+
+const protectedRoutes = [
+  ...routePermissions.user,
+  ...routePermissions.recruiter,
+  ...routePermissions.admin,
+];
+
+const isProtectedRoute = protectedRoutes.some(
+  (route) =>
+    route === path ||
+    matchRoute(path, route)
+);
+
+if (!isProtectedRoute) {
+  return NextResponse.next();
+}
 
   // Check authentication status by validating the access token
   const accessToken = request.headers.get("x-access-token");

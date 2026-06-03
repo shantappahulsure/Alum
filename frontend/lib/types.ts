@@ -3,8 +3,10 @@ import { z } from "zod";
 export interface User {
   _id: string;
   email: string;
+  
   firstName: string;
   lastName: string;
+  username: string;
   role: "user" | "recruiter" | "admin";
   companyName?: string;
   isBlocked: boolean;
@@ -12,10 +14,31 @@ export interface User {
   updatedAt: string;
 }
 
+export interface Notification {
+  _id: string;
+
+  recipientEmail: string;
+
+  username: string;
+
+  senderName?: string;
+
+  senderEmail?: string;
+
+  type: string;
+
+  message: string;
+
+  read: boolean;
+
+  createdAt: string;
+}
+
 export interface RegisterData {
   email: string;
   password: string;
   firstName: string;
+  username: string;
   lastName: string;
   role: "user" | "recruiter" | "admin";
   companyName?: string;

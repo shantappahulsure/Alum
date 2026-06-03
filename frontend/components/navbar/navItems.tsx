@@ -20,6 +20,7 @@ export function MainNav({ mobile = false }: MainNavProps) {
     { href: "/blogs", label: "Blogs" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
+    { href: "/referrals",label: "Referrals" },
   ];
 
   return (

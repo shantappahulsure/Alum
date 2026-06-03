@@ -1,25 +1,182 @@
 "use client";
-import Link from "next/link";
 
-import { ForgotPasswordForm } from "@/components/forms/forgot-password";
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
+
+  const [email, setEmail] =
+    useState("");
+
+  const [otp, setOtp] =
+    useState("");
+
+  const [
+    newPassword,
+    setNewPassword,
+  ] = useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  /*
+========================================
+SEND OTP
+========================================
+*/
+
+  const sendOTP = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "http://localhost:3001/api/auth/send-otp",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            email,
+          }),
+        }
+      );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        alert(data.message);
+
+        return;
+      }
+
+      alert("OTP sent successfully");
+    } catch (error) {
+      console.log(error);
+
+      alert("Error sending OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /*
+========================================
+RESET PASSWORD
+========================================
+*/
+
+  const resetPassword =
+    async () => {
+      try {
+        setLoading(true);
+
+        const response = await fetch(
+          "http://localhost:3001/api/auth/reset-password-otp",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              email,
+              otp,
+              newPassword,
+            }),
+          }
+        );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          alert(data.message);
+
+          return;
+        }
+
+        alert(
+          "Password reset successful"
+        );
+
+        router.push("/login");
+      } catch (error) {
+        console.log(error);
+
+        alert(
+          "Reset password failed"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <div className="absolute left-4 top-6">
-        <Button
-          variant="ghost"
-          onClick={() => window.history.back()}
-          className="flex items-center text-sm text-muted-foreground hover:text-primary"
+    <div className="flex min-h-screen items-center justify-center bg-black text-white">
+      <div className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-950 p-6 space-y-4">
+        <h1 className="text-3xl font-bold text-center">
+          Forgot Password
+        </h1>
+
+        <p className="text-center text-zinc-400">
+          Reset password using OTP
+        </p>
+
+        <input
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
+          className="w-full rounded border border-zinc-700 bg-zinc-900 p-3"
+        />
+
+        <button
+          onClick={sendOTP}
+          disabled={loading}
+          className="w-full rounded bg-white p-3 font-semibold text-black hover:bg-zinc-200"
         >
-          <Icons.arrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-      </div>
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-        <ForgotPasswordForm />
+          Send OTP
+        </button>
+
+        <input
+          type="text"
+          placeholder="Enter OTP"
+          value={otp}
+          onChange={(e) =>
+            setOtp(e.target.value)
+          }
+          className="w-full rounded border border-zinc-700 bg-zinc-900 p-3"
+        />
+
+        <input
+          type="password"
+          placeholder="Enter new password"
+          value={newPassword}
+          onChange={(e) =>
+            setNewPassword(
+              e.target.value
+            )
+          }
+          className="w-full rounded border border-zinc-700 bg-zinc-900 p-3"
+        />
+
+        <button
+          onClick={resetPassword}
+          disabled={loading}
+          className="w-full rounded bg-white p-3 font-semibold text-black hover:bg-zinc-200"
+        >
+          Reset Password
+        </button>
       </div>
     </div>
   );

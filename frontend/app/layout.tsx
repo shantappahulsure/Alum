@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/contexts/AuthContext";
 
+
 const fontInter = FontSans({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -33,6 +34,11 @@ export default function RootLayout({
           fontInter.variable
         )}
       >
+        <Toaster
+  position="top-right"
+  reverseOrder={false}
+/>
+        
         <SpeedInsights />
 
         <ThemeProvider
@@ -45,7 +51,6 @@ export default function RootLayout({
             {children}
           </AuthProvider>
 
-          <Toaster position="top-center" />
         </ThemeProvider>
       </body>
     </html>

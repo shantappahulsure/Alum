@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Send, } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,15 @@ import { ModeToggle } from "@/components/button/theme-toggle";
 import { UserNav } from "@/components/navbar/userNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/logo";
+import NotificationBell from "../notification-bell";
 
 export function Navbar() {
   const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
   const pathname = usePathname();
-const { user, loading } = useAuth();
-if (loading) {
-  return null;
-}
+  const { user, loading } = useAuth();
+  if (loading) {
+    return null;
+  }
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-between">
@@ -40,7 +41,21 @@ if (loading) {
             <ModeToggle />
 
             {user ? (
-              <UserNav />
+              <>
+                <div className="flex items-center gap-3">
+                <Link href="/chat">
+  <Button variant="ghost" size="icon">
+    <Send className="h-5 w-5" />
+  </Button>
+</Link>
+
+<NotificationBell />
+<UserNav />
+
+                 
+
+                </div>
+              </>
             ) : (
               <>
                 <Button asChild variant="ghost" size="sm">
@@ -48,7 +63,7 @@ if (loading) {
                     href="/login"
                     className={cn(
                       pathname === "/login" &&
-                        "bg-muted font-medium text-foreground"
+                      "bg-muted font-medium text-foreground"
                     )}
                   >
                     Login
@@ -59,7 +74,7 @@ if (loading) {
                     href="/signup"
                     className={cn(
                       pathname === "/signup" &&
-                        "bg-background font-medium text-foreground"
+                      "bg-background font-medium text-foreground"
                     )}
                   >
                     Sign Up
@@ -122,7 +137,7 @@ if (loading) {
                   variant="ghost"
                   size="sm"
                   className="transition-colors duration-200"
-                  onClick={() => {}}
+                  onClick={() => { }}
                 >
                   Profile
                 </Button>
@@ -139,7 +154,7 @@ if (loading) {
                     href="/login"
                     className={cn(
                       pathname === "/login" &&
-                        "bg-muted font-medium text-foreground"
+                      "bg-muted font-medium text-foreground"
                     )}
                   >
                     Login
@@ -154,7 +169,7 @@ if (loading) {
                     href="/signup"
                     className={cn(
                       pathname === "/signup" &&
-                        "bg-background font-medium text-foreground"
+                      "bg-background font-medium text-foreground"
                     )}
                   >
                     Sign Up

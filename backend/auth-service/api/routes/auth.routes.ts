@@ -1,31 +1,95 @@
-import { Router } from "express"
+import { Router } from "express";
+
 import {
   register,
   login,
   refreshToken,
   logout,
   validateToken,
-  forgotPassword,
-  resetPassword,
   updateUserProfile,
-} from "../controllers/auth.controller"
-import { rateLimiter } from "../middleware/rate-limiter"
-import { verifyServiceToken } from "../middleware/auth"
+  sendOTP,
+  verifyOTP,
+  resetPasswordWithOTP,
+} from "../controllers/auth.controller";
 
-const router = Router()
+import { rateLimiter } from "../middleware/rate-limiter";
 
-router.post("/register", register)
-router.post("/login", login)
-router.post("/refresh-token", refreshToken)
-router.post("/logout", logout)
-router.post("/validate-token", validateToken)
+import { verifyServiceToken } from "../middleware/auth";
 
-// Password reset routes with rate limiting
-router.post("/forgot-password", rateLimiter, forgotPassword)
-router.post("/reset-password", rateLimiter, resetPassword)
+const router = Router();
 
-// Internal API for updating user profile data
-// This should be secured to only allow requests from other services
-router.put("/users/:userId/profile", verifyServiceToken, updateUserProfile)
+/*
+==================================================
+AUTH
+==================================================
+*/
+
+router.post(
+  "/register",
+  register
+);
+
+router.post(
+  "/login",
+  login
+);
+
+router.post(
+  "/refresh-token",
+  refreshToken
+);
+
+router.post(
+  "/logout",
+  logout
+);
+
+router.post(
+  "/validate-token",
+  validateToken
+);
+
+/*
+==================================================
+OTP
+==================================================
+*/
+
+router.post(
+  "/send-otp",
+  rateLimiter,
+  sendOTP
+);
+
+router.post(
+  "/verify-otp",
+  rateLimiter,
+  verifyOTP
+);
+
+/*
+==================================================
+RESET PASSWORD WITH OTP
+==================================================
+*/
+
+router.post(
+  "/reset-password-otp",
+  rateLimiter,
+  resetPasswordWithOTP
+);
+
+/*
+==================================================
+UPDATE PROFILE
+==================================================
+*/
+
+router.put(
+  "/users/:userId",
+  verifyServiceToken,
+  updateUserProfile
+);
+
 
 export default router;

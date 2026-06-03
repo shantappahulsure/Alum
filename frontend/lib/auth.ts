@@ -147,24 +147,50 @@ function clearAuthState(): void {
 /**
  * Register a new user
  */
-export const registerUser = async (
-  userData: RegisterData
-): Promise<{ user: User; accessToken: string; refreshToken: string }> => {
-  try {
-    const response = await authApi.post("/register", userData);
-    const { user, accessToken, refreshToken } = response.data;
+export const registerUser =
+  async (userData: any) => {
+    try {
+      const response =
+        await fetch(
+          `${API_URL}/api/auth/register`,
+          {
+            method: "POST",
 
-    if (typeof window !== "undefined") {
-      setTokens(accessToken, refreshToken);
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("user", JSON.stringify(user));
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify(
+              userData
+            ),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      console.log(
+        "REGISTER RESPONSE:",
+        data
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          data.message
+        );
+      }
+
+      return data;
+    } catch (error) {
+      console.log(
+        "REGISTER ERROR:",
+        error
+      );
+
+      throw error;
     }
-
-    return { user, accessToken, refreshToken };
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Registration failed");
-  }
-};
+  };
 
 /**
  * Login a user
