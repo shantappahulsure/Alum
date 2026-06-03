@@ -31,40 +31,31 @@ CORS CONFIGURATION
 ========================================
 */
 
-const allowedOrigins = [
-  "http://localhost:3000",
-
-  "https://alum1.vercel.app",
-];
+/*
+========================================
+CORS CONFIGURATION
+========================================
+*/
 
 app.use(
   cors({
-    origin: function (
-      origin,
-      callback
-    ) {
+    origin: (origin, callback) => {
       if (!origin) {
-        return callback(
-          null,
-          true
-        );
+        return callback(null, true);
       }
 
-      if (
-        allowedOrigins.includes(
-          origin
-        )
-      ) {
-        return callback(
-          null,
-          true
-        );
+      if (origin === "http://localhost:3000") {
+        return callback(null, true);
       }
+
+      if (origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+
+      console.log("Blocked CORS Origin:", origin);
 
       return callback(
-        new Error(
-          "Not allowed by CORS"
-        )
+        new Error("Not allowed by CORS")
       );
     },
 
@@ -256,17 +247,8 @@ SOCKET IO
 export const io =
   new Server(server, {
     cors: {
-      origin: [
-        "http://localhost:3000",
-
-        "https://alum1.vercel.app",
-      ],
-
-      methods: [
-        "GET",
-        "POST",
-      ],
-
+      origin: true,
+      methods: ["GET", "POST"],
       credentials: true,
     },
   });
