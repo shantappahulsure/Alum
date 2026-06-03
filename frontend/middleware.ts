@@ -1,155 +1,170 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-// import { validateAccessToken } from "@/lib/auth";
+// import { NextResponse } from "next/server";
+// import type { NextRequest } from "next/server";
+// // import { validateAccessToken } from "@/lib/auth";
 
-const routePermissions = {
-  public: [
-    "/",
-    "/login",
-    "/signup",
-    "/forgot-password",
-    "/reset-password",
-    "/jobs",
-    "/job/[id]",
-    "/explore",
-    "/about",
-    "/contact",
-    "/terms-of-service",
-    "/privacy-policy",
-    "/faq",
-    "/chat",
-  ],
-  user: [
-    "/profile",
-    "/profile/edit",
-    "/settings",
-    "/jobs/saved",
-    "/jobs/recommended",
-    "/job/[id]/apply",
-  ],
-  recruiter: [
-    "/dashboard",
-    "/profile",
-    "/profile/edit",
-    "/settings",
-    "/jobs/create",
-    "/jobs/edit/[id]",
-    "/jobs/manage",
-    "/analytics",
-  ],
-  admin: [
-    "/admin",
-    "/admin/dashboard",
-    "/admin/users",
-    "/admin/jobs",
-    "/admin/reports",
-    "/admin/settings",
-  ],
-};
+// const routePermissions = {
+//   public: [
+//     "/",
+//     "/login",
+//     "/signup",
+//     "/forgot-password",
+//     "/reset-password",
+//     "/jobs",
+//     "/job/[id]",
+//     "/explore",
+//     "/about",
+//     "/contact",
+//     "/terms-of-service",
+//     "/privacy-policy",
+//     "/faq",
+//     "/chat",
+//   ],
+//   user: [
+//     "/profile",
+//     "/profile/edit",
+//     "/settings",
+//     "/jobs/saved",
+//     "/jobs/recommended",
+//     "/job/[id]/apply",
+//   ],
+//   recruiter: [
+//     "/dashboard",
+//     "/profile",
+//     "/profile/edit",
+//     "/settings",
+//     "/jobs/create",
+//     "/jobs/edit/[id]",
+//     "/jobs/manage",
+//     "/analytics",
+//   ],
+//   admin: [
+//     "/admin",
+//     "/admin/dashboard",
+//     "/admin/users",
+//     "/admin/jobs",
+//     "/admin/reports",
+//     "/admin/settings",
+//   ],
+// };
 
-/**
- * Helper function to match dynamic routes
- */
-function matchRoute(requestPath: string, routePattern: string): boolean {
-  const dynamicRouteRegex = routePattern
-    .replace(/\[\w+\]/g, "[^/]+")
-    .replace(/\//g, "\\/");
-  const regex = new RegExp(`^${dynamicRouteRegex}$`);
-  return regex.test(requestPath);
-}
+// /**
+//  * Helper function to match dynamic routes
+//  */
+// function matchRoute(requestPath: string, routePattern: string): boolean {
+//   const dynamicRouteRegex = routePattern
+//     .replace(/\[\w+\]/g, "[^/]+")
+//     .replace(/\//g, "\\/");
+//   const regex = new RegExp(`^${dynamicRouteRegex}$`);
+//   return regex.test(requestPath);
+// }
 
-/**
- * Prevent infinite redirect loops
- */
-function isRedirectLoop(request: NextRequest): boolean {
-  const redirectCount = parseInt(
-    request.headers.get("x-redirect-count") || "0"
-  );
-  return redirectCount >= 3;
-}
+// /**
+//  * Prevent infinite redirect loops
+//  */
+// function isRedirectLoop(request: NextRequest): boolean {
+//   const redirectCount = parseInt(
+//     request.headers.get("x-redirect-count") || "0"
+//   );
+//   return redirectCount >= 3;
+// }
 
-/**
- * Middleware function to handle authentication and route protection
- */
-export async function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
+// /**
+//  * Middleware function to handle authentication and route protection
+//  */
+// export async function middleware(request: NextRequest) {
+//   const path = request.nextUrl.pathname;
 
-  // Skip middleware for Next.js internals and static files
-  if (
-    path.startsWith("/_next") ||
-    path.startsWith("/api") ||
-    path.startsWith("/static") ||
-    path.includes(".")
-  ) {
-    return NextResponse.next();
-  }
+//   // Skip middleware for Next.js internals and static files
+//   if (
+//     path.startsWith("/_next") ||
+//     path.startsWith("/api") ||
+//     path.startsWith("/static") ||
+//     path.includes(".")
+//   ) {
+//     return NextResponse.next();
+//   }
 
-  // Prevent redirect loops
-  if (isRedirectLoop(request)) {
-    console.error("Detected redirect loop for:", path);
-    return NextResponse.next();
-  }
+//   // Prevent redirect loops
+//   if (isRedirectLoop(request)) {
+//     console.error("Detected redirect loop for:", path);
+//     return NextResponse.next();
+//   }
 
-  // Check if it's a public route - if so, allow access
-  const isPublicRoute = routePermissions.public.some(
-    (route) => route === path || matchRoute(path, route)
-  );
-  if (isPublicRoute) {
-    return NextResponse.next();
-  }
+//   // Check if it's a public route - if so, allow access
+//   const isPublicRoute = routePermissions.public.some(
+//     (route) => route === path || matchRoute(path, route)
+//   );
+//   if (isPublicRoute) {
+//     return NextResponse.next();
+//   }
 
-  // Avoid redirecting if already on login page
-  if (path === "/login") {
-    return NextResponse.next();
-  }
+//   // Avoid redirecting if already on login page
+//   if (path === "/login") {
+//     return NextResponse.next();
+//   }
 
-  /****************************************
-CHECK IF ROUTE IS ACTUALLY PROTECTED
-****************************************/
-  // YAHA PE-----------------------------------------------------------------------
-// const protectedRoutes = [
-//   ...routePermissions.user,
-//   ...routePermissions.recruiter,
-//   ...routePermissions.admin,
-// ];
+//   /****************************************
+// CHECK IF ROUTE IS ACTUALLY PROTECTED
+// ****************************************/
+//   // YAHA PE-----------------------------------------------------------------------
+// // const protectedRoutes = [
+// //   ...routePermissions.user,
+// //   ...routePermissions.recruiter,
+// //   ...routePermissions.admin,
+// // ];
 
-// const isProtectedRoute = protectedRoutes.some(
-//   (route) =>
-//     route === path ||
-//     matchRoute(path, route)
-// );
+// // const isProtectedRoute = protectedRoutes.some(
+// //   (route) =>
+// //     route === path ||
+// //     matchRoute(path, route)
+// // );
 
-// if (!isProtectedRoute) {
+// // if (!isProtectedRoute) {
+// //   return NextResponse.next();
+// // }
+
+// //   // Check authentication status by validating the access token
+// //   const accessToken =
+
+// //   request.cookies.get("accessToken")?.value ||
+
+// //   request.headers.get("x-access-token");
+
+// // const isAuthenticated = !!accessToken;
+
+// //   if (!isAuthenticated) {
+// //     const from = encodeURIComponent(path);
+// //     const loginUrl = new URL(`/login?from=${from}`, request.url);
+// //     loginUrl.searchParams.append("_ts", Date.now().toString());
+// //     const response = NextResponse.redirect(loginUrl);
+// //     const currentRedirectCount = parseInt(
+// //       request.headers.get("x-redirect-count") || "0"
+// //     );
+// //     response.headers.set(
+// //       "x-redirect-count",
+// //       (currentRedirectCount + 1).toString()
+// //     );
+// //     return response;
+// //   }
+
 //   return NextResponse.next();
 // }
 
-//   // Check authentication status by validating the access token
-//   const accessToken =
+// export const config = {
+//   matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*|api).*)"],
+// };
 
-//   request.cookies.get("accessToken")?.value ||
 
-//   request.headers.get("x-access-token");
 
-// const isAuthenticated = !!accessToken;
 
-//   if (!isAuthenticated) {
-//     const from = encodeURIComponent(path);
-//     const loginUrl = new URL(`/login?from=${from}`, request.url);
-//     loginUrl.searchParams.append("_ts", Date.now().toString());
-//     const response = NextResponse.redirect(loginUrl);
-//     const currentRedirectCount = parseInt(
-//       request.headers.get("x-redirect-count") || "0"
-//     );
-//     response.headers.set(
-//       "x-redirect-count",
-//       (currentRedirectCount + 1).toString()
-//     );
-//     return response;
-//   }
 
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*|api).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
