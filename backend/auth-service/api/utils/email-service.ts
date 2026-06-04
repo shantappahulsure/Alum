@@ -2,6 +2,11 @@ import nodemailer from "nodemailer"
 import config from "../config"
 
 // Configure email transporter
+console.log("EMAIL_HOST =", config.email.host);
+console.log("EMAIL_PORT =", config.email.port);
+console.log("EMAIL_SECURE =", config.email.secure);
+console.log("EMAIL_USER =", config.email.user);
+
 const transporter = nodemailer.createTransport({
   host: config.email.host,
   port: config.email.port,
@@ -11,6 +16,15 @@ const transporter = nodemailer.createTransport({
     pass: config.email.password,
   },
 })
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("SMTP VERIFY ERROR:", error);
+  } else {
+    console.log("SMTP READY");
+  }
+});
+
 
 /**
  * Sends a password reset email with a secure link
