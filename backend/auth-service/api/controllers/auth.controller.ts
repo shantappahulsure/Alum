@@ -30,19 +30,19 @@ MAIL TRANSPORTER
 */
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  host: config.email.host,
+  port: config.email.port,
+  secure: config.email.secure,
 
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: config.email.user,
+    pass: config.email.password,
   },
 
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
+})
 
   console.log("EMAIL_USER =", process.env.EMAIL_USER);
 console.log(
@@ -55,6 +55,7 @@ console.log("EMAIL_PORT =", config.email.port);
 console.log("EMAIL_SECURE =", config.email.secure);
 transporter.verify((err, success) => {
   if (err) {
+    console.log("SMTP VERIFY FAILED");
     console.error("SMTP VERIFY ERROR:", err);
   } else {
     console.log("SMTP READY");
