@@ -40,6 +40,20 @@ const transporter =
     },
   });
 
+  console.log("EMAIL_USER =", process.env.EMAIL_USER);
+console.log(
+  "EMAIL_PASSWORD EXISTS =",
+  !!process.env.EMAIL_PASSWORD
+);
+
+transporter.verify((err, success) => {
+  if (err) {
+    console.error("SMTP VERIFY ERROR:", err);
+  } else {
+    console.log("SMTP READY");
+  }
+});
+
 /*
 ==================================================
 REGISTER
