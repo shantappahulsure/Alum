@@ -29,16 +29,20 @@ MAIL TRANSPORTER
 ==================================================
 */
 
-const transporter =
-  nodemailer.createTransport({
-    service: "gmail",
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
 
-    auth: {
-      user: process.env.EMAIL_USER,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
 
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+});
 
   console.log("EMAIL_USER =", process.env.EMAIL_USER);
 console.log(
