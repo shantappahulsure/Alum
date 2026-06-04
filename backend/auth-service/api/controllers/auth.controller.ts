@@ -50,6 +50,9 @@ console.log(
   !!process.env.EMAIL_PASSWORD
 );
 console.log("STARTING SMTP VERIFY");
+console.log("EMAIL_HOST =", config.email.host);
+console.log("EMAIL_PORT =", config.email.port);
+console.log("EMAIL_SECURE =", config.email.secure);
 transporter.verify((err, success) => {
   if (err) {
     console.error("SMTP VERIFY ERROR:", err);
