@@ -57,15 +57,22 @@ export function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     clearError();
-
+  
     try {
       await login(values.email, values.password);
+  
       toast.success("You have successfully logged in!");
-
+  
       const from = searchParams.get("from") || "/profile";
-      router.push(decodeURIComponent(from));
+  
+      console.log("LOGIN SUCCESS");
+      console.log("REDIRECT TO:", from);
+  
+      window.location.href = decodeURIComponent(from);
     } catch (err: any) {
-      toast.error(err.message || "Invalid credentials. Please try again.");
+      toast.error(
+        err.message || "Invalid credentials. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
