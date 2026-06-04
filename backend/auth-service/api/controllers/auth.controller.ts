@@ -49,7 +49,7 @@ console.log(
   "EMAIL_PASSWORD EXISTS =",
   !!process.env.EMAIL_PASSWORD
 );
-
+console.log("STARTING SMTP VERIFY");
 transporter.verify((err, success) => {
   if (err) {
     console.error("SMTP VERIFY ERROR:", err);
